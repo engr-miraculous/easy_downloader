@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:easy_downloader/easy_downloader.dart';
 import 'package:easy_downloader/src/core/extensions/string_ext.dart';
@@ -148,4 +149,21 @@ class EasyDownloader {
   ///listen download task by id
   Stream<void>? downloadTaskStream(int id) =>
       _localeStorage.watchDownloadTask(id);
+
+  ///creat heders compatible with new download system
+  Future updateHeader() async {
+    assert(_isInit, 'EasyDownloader not initialized');
+    var tasks = _localeStorage.getDownloadTasks();
+    for (var task in tasks) {
+      if (task.status == DownloadStatus.completed &&
+          (task.headers['courseVid'] != null)) {
+        task = task.copyWith(
+            headers: IsarMapEntityEasyDownloader.fromJson({
+          'videoId': jsonDecode(task.headers['courseVid'])['id'].toString(),
+          'courseId': ""
+        }));
+        await _localeStorage.setDownloadTask(task);
+      }
+    }
+  }
 }
