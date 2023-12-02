@@ -150,20 +150,25 @@ class EasyDownloader {
   Stream<void>? downloadTaskStream(int id) =>
       _localeStorage.watchDownloadTask(id);
 
-  ///creat heders compatible with new download system
-  Future updateHeader() async {
+  ///create a [DownloadTask] without downloading
+  Future<DownloadTask> sideloadTask({
+    required String url,
+    required String path,
+    required String fileName,
+    required DownloadStatus status,
+    Map<String, String> headers = const {},
+  }) async {
     assert(_isInit, 'EasyDownloader not initialized');
-    var tasks = _localeStorage.getDownloadTasks();
-    for (var task in tasks) {
-      if (task.status == DownloadStatus.completed &&
-          (task.headers['courseVid'] != null)) {
-        task = task.copyWith(
-            headers: IsarMapEntityEasyDownloader.fromJson({
-          'videoId': jsonDecode(task.headers['courseVid'])['id'].toString(),
-          'courseId': ""
-        }));
-        await _localeStorage.setDownloadTask(task);
-      }
-    }
+    var task = DownloadTask(
+        url: url,
+        path: path,
+        fileName: fileName,
+        status: status,
+        headers: IsarMapEntityEasyDownloader.fromJson(headers));
+    final id = await _localeStorage.setDownloadTask(task);
+    task = task.copyWith(downloadId: id);
+    assert(id != null, 'EasyDownloader: id must not be null');
+
+    return task;
   }
 }
