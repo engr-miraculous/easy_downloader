@@ -59,9 +59,7 @@ class DownloadManagerIsolate {
     _taskClientMap[downloadTask.downloadId] = [];
     await client.getUrl(Uri.parse(downloadTask.url)).then((value) {
       downloadTask.headers.forEach((k, v) {
-        if (k != "video" && k != "course") {
-          value.headers.add(k, v);
-        }
+        value.headers.add(k, v);
       });
       return value.close();
     }).then((value) async {
@@ -117,9 +115,7 @@ class DownloadManagerIsolate {
     }
     await client.getUrl(Uri.parse(task.url)).then((value) {
       task.headers.forEach((k, v) {
-        if (k != "video" && k != "course") {
-          value.headers.add(k, v);
-        }
+        value.headers.add(k, v);
       });
       value.headers.add('Range', 'bytes=$newStart-$newEnd');
       return value.close();
@@ -153,9 +149,7 @@ class DownloadManagerIsolate {
     final newEnd = block.end;
     return client.getUrl(Uri.parse(task.url)).then((value) {
       task.headers.forEach((k, v) {
-        if (k != "video" && k != "course") {
-          value.headers.add(k, v);
-        }
+        value.headers.add(k, v);
       });
       value.headers.add('Range', 'bytes=$newStart-$newEnd');
       return value.close();
